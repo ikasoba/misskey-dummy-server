@@ -1,11 +1,12 @@
 import { CacheKvStore } from "./cache.ts";
-import { SerializedResponse } from "./response.ts";
+import { SerializedResponse, serializeResponseHash } from "./response.ts";
 import { join } from "path/mod.ts";
 
 export interface StorageInfo {
   [id: string]: {
     status: SerializedResponse["status"];
     headers: SerializedResponse["headers"];
+    hash: string;
     createdAt: number;
     expireIn?: number;
   };
@@ -80,7 +81,11 @@ export class FileStorage implements CacheKvStore {
   ): Promise<void> {
     const info = await this.info.get();
 
+    const hash = await serializeResponseHash(value);
+    if (info[key]?.hash == hash) return;
+
     info[key] = {
+      hash: hash,
       status: value.status,
       headers: value.headers,
       createdAt: Date.now(),
