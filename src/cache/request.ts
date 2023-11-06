@@ -13,6 +13,7 @@ export const ignoredHeader = new Set<string>([
   "connection",
   "host",
   "origin",
+  "cdn-loop",
 ]);
 
 export const sortObject = <O extends object>(o: O): O =>
@@ -40,7 +41,8 @@ export async function requestHash(req: Request) {
     key = key.toLowerCase();
 
     if (
-      key.startsWith("sec-") || key.startsWith("if-") || ignoredHeader.has(key)
+      key.startsWith("sec-") || key.startsWith("if-") ||
+      key.startsWith("cf-") || key.startsWith("x-") || ignoredHeader.has(key)
     ) {
       delete header[key];
     }
