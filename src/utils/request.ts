@@ -1,3 +1,5 @@
+import { decodeBase64 } from "encoding/base64.ts";
+
 export interface RequesterRequest {
   method: string;
   url: string;
@@ -13,7 +15,7 @@ export const createRequester = (fetch: FetchApi) => {
     const res = await fetch(req.url, {
       method: req.method,
       headers: req.headers,
-      body: req.body,
+      body: req.body && decodeBase64(req.body),
     });
 
     if (!res.ok) {
