@@ -24,6 +24,7 @@ export class Scheduler<
   constructor(
     private tasksFilePath: string,
     private tasks: Tasks,
+    private minutePerRequest: number,
   ) {
     try {
       Deno.mkdirSync(dirname(this.tasksFilePath), { recursive: true });
@@ -69,13 +70,13 @@ export class Scheduler<
     console.log("[scheduler]", "dispatch event", JSON.stringify(eventName));
 
     for (const task of tasks) {
-      if (task.on == eventName) {
-        const fn = this.tasks[task.type];
+      const fn = this.tasks[task.type];
 
-        fn(...task.args);
+      fn(...task.args);
 
-        continue;
-      }
+      await new Promise<void>((r) =>
+        setTimeout(r, 1000 * 60 / this.minutePerRequest)
+      );
     }
 
     await this.syncScheduledTasks();
