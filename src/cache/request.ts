@@ -21,6 +21,23 @@ export const sortObject = <O extends object>(o: O): O =>
     Object.entries(o).sort(([x], [y]) => x.charCodeAt(0) - y.charCodeAt(0)),
   ) as O;
 
+export const ignoreHeader = (header: Record<string, string>) => {
+  header = { ...header };
+
+  for (let key in header) {
+    key = key.toLowerCase();
+
+    if (
+      key.startsWith("sec-") || key.startsWith("if-") ||
+      key.startsWith("cf-") || key.startsWith("x-") || ignoredHeader.has(key)
+    ) {
+      delete header[key];
+    }
+  }
+
+  return header;
+};
+
 export async function requestHash(req: Request) {
   const url = new URL(req.url);
   const urlHash = await sha256(
@@ -37,18 +54,7 @@ export async function requestHash(req: Request) {
     header = {};
   }
 
-  for (let key in header) {
-    key = key.toLowerCase();
-
-    if (
-      key.startsWith("sec-") || key.startsWith("if-") ||
-      key.startsWith("cf-") || key.startsWith("x-") || ignoredHeader.has(key)
-    ) {
-      delete header[key];
-    }
-  }
-
-  header = sortObject(header);
+  header = sortObject(ignoreHeader(header));
 
   const headerHash = await sha256(
     new TextEncoder().encode(JSON.stringify(header)),

@@ -3,6 +3,7 @@ import { Pinger } from "../utils/pinger.ts";
 import { PROXY_HOST } from "./app.ts";
 import { HttpCache } from "../cache/cache.ts";
 import { FileStorage } from "../cache/FileStorage.ts";
+import { logHandler } from "../utils/logHandler.ts";
 
 try {
   await Deno.mkdir(".cache");
@@ -16,12 +17,6 @@ export function proxyHandler(pinger: Pinger, app: Hono) {
 
     const url = new URL(ctx.req.raw.url);
     const isWs = ctx.req.header("upgrade") === "websocket";
-
-    console.log(
-      "[proxy] isHealthy = " + isHealthy + ",",
-      "path = " + url.pathname + url.search + ",",
-      "ws = " + isWs,
-    );
 
     if (isWs) {
       if (isHealthy) {
@@ -91,7 +86,7 @@ export function proxyHandler(pinger: Pinger, app: Hono) {
     );
 
     if (isHealthy) {
-      const response = await fetch(request.clone());
+      const response = await pinger.fetch(request.clone());
 
       await proxyCache.set(request, response.clone());
 

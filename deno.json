@@ -4,6 +4,9 @@
     "hono/": "https://deno.land/x/hono@v3.9.2/",
     "http/": "https://deno.land/std@0.205.0/http/",
     "dotenv/": "https://deno.land/std@0.205.0/dotenv/",
-    "path/": "https://deno.land/std@0.205.0/path/"
+    "path/": "https://deno.land/std@0.205.0/path/",
+    "jsonld/": "https://esm.sh/jsonld@8.3.1/",
+    "encoding/base64.ts": "https://deno.land/std@0.205.0/encoding/base64.ts",
+    "lizod/": "https://esm.sh/lizod@0.2.7/"
   }
 }

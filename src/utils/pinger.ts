@@ -1,6 +1,8 @@
 export class Pinger {
   private lastPinged?: number;
   private isHealthy = false;
+  public onStatusChanged = new Set<((isHealthy: boolean) => void)>();
+  public onStatusHealthy = new Set<() => void>();
 
   constructor(private host: string) {}
 
@@ -8,7 +10,7 @@ export class Pinger {
     if (this.lastPinged == null) return this.checkHealthy();
 
     const diff = Date.now() - this.lastPinged;
-    if (diff > 1000 * 60 * 60 * 6) {
+    if (diff > 1000 * 60 * 30) {
       return this.checkHealthy();
     }
 
@@ -16,14 +18,38 @@ export class Pinger {
   }
 
   checkHealthy(): Promise<boolean> {
-    return fetch(this.host).then((x) => {
+    return this.fetch(this.host).then(() => this.isHealthy).catch(() =>
+      this.isHealthy
+    );
+  }
+
+  fetch(...args: Parameters<typeof fetch>) {
+    const prevStatus = this.isHealthy;
+    return fetch(...args).then((x) => {
       this.lastPinged = Date.now();
-      return this.isHealthy = x.ok;
-    }).catch(() => {
+      this.isHealthy = true;
+      if (x.status >= 500 && x.status <= 599) {
+        this.isHealthy = false;
+      }
+      return x;
+    }).catch((err) => {
       this.lastPinged = Date.now();
-      return this.isHealthy = false;
+      this.isHealthy = false;
+
+      throw err;
     }).finally(() => {
-      console.info("[pinger]", this.isHealthy ? "healthy" : "unavailable");
+      if (prevStatus != this.isHealthy) {
+        console.info("[pinger]", this.isHealthy ? "healthy" : "unavailable");
+        for (const fn of this.onStatusChanged) {
+          fn(this.isHealthy);
+        }
+
+        if (this.isHealthy) {
+          for (const fn of this.onStatusHealthy) {
+            fn();
+          }
+        }
+      }
     });
   }
 }
