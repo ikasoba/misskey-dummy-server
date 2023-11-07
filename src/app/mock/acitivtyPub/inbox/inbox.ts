@@ -8,6 +8,7 @@ import {
 } from "../../activityStreams/Activity.ts";
 import { AppScheduler, PROXY_HOST } from "../../../app.ts";
 import { encodeBase64 } from "encoding/base64.ts";
+import { ValidatorContext } from "../../../../utils/lizod.ts";
 
 export class ApInbox {
   constructor(private pinger: Pinger, private scheduler: AppScheduler) {}
@@ -39,8 +40,9 @@ export function inboxHandler(
     }
 
     const body = await ctx.req.json<unknown>();
+    let errors: ValidatorContext = { errors: [] };
 
-    if ($ApCreate(body)) {
+    if ($ApCreate(body, errors)) {
       // サーバーが復帰した頃にリクエストを投げる
       scheduler.schedule("request", "healthy", {
         method: ctx.req.method,
@@ -55,6 +57,9 @@ export function inboxHandler(
       return ctx.text("", 200);
     }
 
-    return ctx.text("invalid request type.", 400);
+    return ctx.text(
+      `validation error:\n${errors.errors.map((x) => x.join(".")).join("\n")}`,
+      400,
+    );
   });
 }

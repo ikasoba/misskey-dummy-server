@@ -55,7 +55,7 @@ export type ApImage = Infer<typeof $ApImage>;
 
 export const $ApActivity = $intersection([
   $object({
-    actor: $opt($ApPerson),
+    actor: $opt($union([$ApPerson, $string])),
     object: $opt($ApObject),
   }),
   $ApObject,
