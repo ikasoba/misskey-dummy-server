@@ -1,4 +1,4 @@
-import { basename } from "path/mod.ts";
+import { basename, dirname } from "path/mod.ts";
 
 export type TasksType = Record<string, (...a: any[]) => any>;
 
@@ -26,7 +26,7 @@ export class Scheduler<
     private tasks: Tasks,
   ) {
     try {
-      Deno.mkdirSync(basename(tasksFilePath), { recursive: true });
+      Deno.mkdirSync(dirname(this.tasksFilePath), { recursive: true });
     } catch {}
 
     try {
