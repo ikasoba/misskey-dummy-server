@@ -40,10 +40,6 @@ export function inboxHandler(
 
     const body = await ctx.req.json<unknown>();
 
-    if (!$ApObject(body)) {
-      return ctx.text("invalid request type.", 400);
-    }
-
     if ($ApCreate(body)) {
       // サーバーが復帰した頃にリクエストを投げる
       scheduler.schedule("request", "healthy", {

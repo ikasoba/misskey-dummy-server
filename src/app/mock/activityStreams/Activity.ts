@@ -20,7 +20,7 @@ export const $arrayable = <T>($T: Validator<T>) => $union([$T, $array($T)]);
 export type ApAny = ApObject;
 
 export const $ApObject = $object({
-  "@context": $opt($arrayable($union([$string]))),
+  "@context": $opt($arrayable($union([$string, $any]))),
   type: $string,
   id: $opt($string),
   attachment: $opt($any),
