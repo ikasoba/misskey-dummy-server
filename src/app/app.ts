@@ -17,7 +17,7 @@ export type AppScheduler = typeof appScheduler;
 
 const pinger = new Pinger(PROXY_HOST);
 
-const appScheduler = new Scheduler(".schedules/", {})
+const appScheduler = new Scheduler(".scheduler/schedules.json", {})
   .defineEvent("healthy")
   .defineTask("request", createRequester(pinger.fetch));
 

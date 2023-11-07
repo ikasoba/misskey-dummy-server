@@ -1,2 +1,3 @@
 .cache/
+.scheduler/
 .env
