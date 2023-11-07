@@ -38,7 +38,7 @@ export function inboxHandler(
       return ctx.text("request too large.", 413);
     }
 
-    const body: unknown = ctx.req.json();
+    const body = await ctx.req.json<unknown>();
 
     if (!$ApObject(body)) {
       return ctx.text("invalid request type.", 400);
