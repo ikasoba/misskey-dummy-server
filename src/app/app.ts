@@ -27,7 +27,7 @@ const appScheduler = new Scheduler(
   MINUTE_PER_REQUEST,
 )
   .defineEvent("healthy")
-  .defineTask("request", createRequester(pinger.fetch));
+  .defineTask("request", createRequester(pinger.fetch.bind(pinger)));
 
 pinger.onStatusHealthy.add(() => {
   appScheduler.dispatch("healthy");
