@@ -67,7 +67,12 @@ export class Scheduler<
     const tasks = this.scheduledTasks[eventName] ?? [];
     this.scheduledTasks[eventName] = [];
 
-    console.log("[scheduler]", "dispatch event", JSON.stringify(eventName));
+    console.log(
+      "[scheduler]",
+      "dispatch event",
+      JSON.stringify(eventName),
+      "runnning tasks",
+    );
 
     for (const task of tasks) {
       const fn = this.tasks[task.type];
@@ -78,6 +83,13 @@ export class Scheduler<
         setTimeout(r, 1000 * 60 / this.minutePerRequest)
       );
     }
+
+    console.log(
+      "[scheduler]",
+      "event",
+      JSON.stringify(eventName),
+      "has finished executing all tasks",
+    );
 
     await this.syncScheduledTasks();
   }
