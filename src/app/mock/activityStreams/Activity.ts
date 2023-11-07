@@ -31,14 +31,14 @@ export const $ApObject = $object({
   context: $opt($string),
   generator: $opt($any),
   image: $opt($any),
-});
+}, false);
 
 export type ApObject = Infer<typeof $ApObject>;
 
 export const $ApPerson = $intersection([
   $object({
     type: $const("Person"),
-  }),
+  }, false),
   $ApObject,
 ]);
 
@@ -47,7 +47,7 @@ export type ApPerson = Infer<typeof $ApPerson>;
 export const $ApImage = $intersection([
   $object({
     type: $const("Image"),
-  }),
+  }, false),
   $ApObject,
 ]);
 
@@ -57,7 +57,7 @@ export const $ApActivity = $intersection([
   $object({
     actor: $opt($union([$ApPerson, $string])),
     object: $opt($ApObject),
-  }),
+  }, false),
   $ApObject,
 ]);
 
@@ -66,7 +66,7 @@ export type ApActivity = Infer<typeof $ApActivity>;
 export const $ApCreate = $intersection([
   $object({
     type: $const("Create"),
-  }),
+  }, false),
   $ApActivity,
 ]);
 
