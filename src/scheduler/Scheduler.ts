@@ -66,6 +66,8 @@ export class Scheduler<
     const tasks = this.scheduledTasks[eventName] ?? [];
     this.scheduledTasks[eventName] = [];
 
+    console.log("[scheduler]", "dispatch event", JSON.stringify(eventName));
+
     for (const task of tasks) {
       if (task.on == eventName) {
         const fn = this.tasks[task.type];
@@ -86,6 +88,13 @@ export class Scheduler<
   ): Promise<void> {
     const tasks = this.scheduledTasks[eventName] ?? [];
 
+    console.log(
+      "[scheduler]",
+      "schedule task",
+      JSON.stringify(taskName),
+      "on",
+      JSON.stringify(eventName),
+    );
     tasks.push({
       type: taskName,
       on: eventName,

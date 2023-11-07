@@ -21,6 +21,10 @@ const appScheduler = new Scheduler(".config/", {})
   .defineEvent("healthy")
   .defineTask("request", createRequester(pinger.fetch));
 
+pinger.onStatusHealthy.add(() => {
+  appScheduler.dispatch("healthy");
+});
+
 export const app = new Hono();
 
 app.use("*", logHandler);
