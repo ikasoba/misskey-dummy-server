@@ -42,7 +42,7 @@ export function inboxHandler(
     const body = await ctx.req.json<unknown>();
     let errors: ValidatorContext = { errors: [] };
 
-    if ($ApCreate(body, errors)) {
+    if ($ApObject(body, errors)) {
       // サーバーが復帰した頃にリクエストを投げる
       scheduler.schedule("request", "healthy", {
         method: ctx.req.method,
@@ -50,16 +50,20 @@ export function inboxHandler(
         headers: Object.fromEntries(ctx.req.raw.headers),
         body: encodeBase64(rawBody),
       });
-
-      // フォールバック用の処理
-      inbox.create(body);
-
-      return ctx.text("", 200);
+    } else {
+      return ctx.text(
+        `validation error:\n${
+          errors.errors.map((x) => x.join(".")).join("\n")
+        }`,
+        400,
+      );
     }
 
-    return ctx.text(
-      `validation error:\n${errors.errors.map((x) => x.join(".")).join("\n")}`,
-      400,
-    );
+    if ($ApCreate(body, errors = { errors: [] })) {
+      // フォールバック用の処理
+      inbox.create(body);
+    }
+
+    return ctx.text("", 202);
   });
 }
