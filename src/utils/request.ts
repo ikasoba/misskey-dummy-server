@@ -12,10 +12,13 @@ export interface RequesterRequest {
 type FetchApi = typeof fetch;
 export const createRequester = (fetch: FetchApi) => {
   return async (req: RequesterRequest): Promise<void> => {
+    const client = Deno.createHttpClient({ allowHost: true });
+
     const res = await fetch(req.url, {
       method: req.method,
       headers: req.headers,
       body: req.body && decodeBase64(req.body),
+      client,
     });
 
     if (!res.ok) {
@@ -23,8 +26,10 @@ export const createRequester = (fetch: FetchApi) => {
         "[requester]",
         "failed to request.",
         `method = ${req.method}, url = ${req.url}`,
-        `status = ${res.status} ${res.statusText}`,
+        `status = ${res.status} ${res.statusText}`
       );
     }
+
+    client.close();
   };
 };

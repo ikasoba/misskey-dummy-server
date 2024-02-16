@@ -1,5 +1,4 @@
 import { Hono } from "hono/mod.ts";
-import { logHandler } from "../../../../utils/logHandler.ts";
 import { Pinger } from "../../../../utils/pinger.ts";
 import {
   $ApCreate,
@@ -21,7 +20,7 @@ export class ApInbox {
 export function inboxHandler(
   pinger: Pinger,
   scheduler: AppScheduler,
-  app: Hono,
+  app: Hono
 ) {
   const inbox = new ApInbox(pinger, scheduler);
 
@@ -52,14 +51,14 @@ export function inboxHandler(
       });
     } else {
       return ctx.text(
-        `validation error:\n${
-          errors.errors.map((x) => x.join(".")).join("\n")
-        }`,
-        400,
+        `validation error:\n${errors.errors
+          .map((x) => x.join("."))
+          .join("\n")}`,
+        400
       );
     }
 
-    if ($ApCreate(body, errors = { errors: [] })) {
+    if ($ApCreate(body, (errors = { errors: [] }))) {
       // フォールバック用の処理
       inbox.create(body);
     }

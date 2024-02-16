@@ -1,7 +1,7 @@
 import { Hono } from "hono/mod.ts";
 import { Pinger } from "../utils/pinger.ts";
 import { proxyHandler } from "./proxy.ts";
-import { activityPubHandler } from "./mock/acitivtyPub/index.ts";
+import { activityPubHandler } from "./mock/activityPub/index.ts";
 import { Scheduler } from "../scheduler/Scheduler.ts";
 import { createRequester } from "../utils/request.ts";
 import { logHandler } from "../utils/logHandler.ts";
@@ -14,7 +14,7 @@ if (!_PROXY_HOST) {
 export const PROXY_HOST = _PROXY_HOST;
 
 const MINUTE_PER_REQUEST = parseFloat(
-  Deno.env.get("MINUTE_PER_REQUEST") ?? "6",
+  Deno.env.get("MINUTE_PER_REQUEST") ?? "6"
 );
 
 export type AppScheduler = typeof appScheduler;
@@ -24,7 +24,7 @@ const pinger = new Pinger(PROXY_HOST);
 const appScheduler = new Scheduler(
   ".scheduler/schedules.json",
   {},
-  MINUTE_PER_REQUEST,
+  MINUTE_PER_REQUEST
 )
   .defineEvent("healthy")
   .defineTask("request", createRequester(pinger.fetch.bind(pinger)));
